@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://bmm067k6jgl1s"]
+
+[ext_resource type="TileSet" uid="uid://job5kleud3tm" path="res://LevelTiles.tres" id="1_0khhh"]
+[ext_resource type="Script" path="res://Spikes.cs" id="1_rimu4"]
+[ext_resource type="PackedScene" uid="uid://c4gvey4d0bs3v" path="res://player_hitbox.tscn" id="3_sa7jm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8idvu"]
+size = Vector2(14, 6)
+
+[node name="Spikes" type="Node2D"]
+script = ExtResource("1_rimu4")
+
+[node name="TileMap" type="TileMap" parent="."]
+position = Vector2(0, 18)
+tile_set = ExtResource("1_0khhh")
+format = 2
+layer_0/tile_data = PackedInt32Array(-65536, 524288, 3)
+
+[node name="PlayerHitbox" parent="." instance=ExtResource("3_sa7jm")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerHitbox"]
+position = Vector2(9, 14)
+shape = SubResource("RectangleShape2D_8idvu")
