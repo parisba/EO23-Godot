@@ -14,4 +14,4 @@ The code written by me is licensed MIT, and the assets are as follows:
 
 ## Contact
 
-Find me on the Fediverse at https://cloudisland.nz/@parisba and Twitter @parissecretlab
+Find me on the Fediverse at https://cloudisland.nz/@parisba and Twitter @parisba
