@@ -1,0 +1,48 @@
+workflows:
+  godot-linux-workflow:
+      name: Godot Linux Workflow
+      max_build_duration: 60
+      instance_type: linux_x2
+      triggering:
+        events:                       
+          - push
+          - pull_request
+        branch_patterns:
+          - pattern: '*'
+            include: true
+            source: true
+      environment:
+        groups:
+          - godot
+        vars:
+          GODOT_VERSION: 4.0
+          GODOT_EXEC_URL: https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip
+          GODOT_TEMPLATES_URL: https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz
+          GODOT_TEMPLATES_DIR: "$HOME/.local/share/godot/export_templates"
+          GODOT_EXEC: Godot_v4.0-stable_mono_linux_x86_64/Godot_v4.0-stable_mono_linux.x86_64
+          EXPORT_TYPE: LinuxX11 # this needs to match export preset defined in Godot GUI
+          ARTIFACT: app.zip
+      scripts:
+        - name: Install dot net
+          script: |
+                        wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+                        sudo dpkg -i packages-microsoft-prod.deb
+                        rm packages-microsoft-prod.deb
+                        sudo apt-get update && sudo apt-get install -y dotnet-sdk-7.0 
+        - name: Download Godot engine
+          script: |
+                        wget ${GODOT_EXEC_URL} && unzip ./Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip
+        - name: Download Godot templates
+          script: |
+                        curl -L -o ./godot-templates.zip ${GODOT_TEMPLATES_URL} && unzip ./godot-templates.zip
+        - name: Setup templates
+          script: |
+                        mkdir -p "${GODOT_TEMPLATES_DIR}" && mv templates "${GODOT_TEMPLATES_DIR}/${GODOT_VERSION}.stable.mono"
+        - name: Prepare build directory
+          script: mkdir ./LittleJumpyPerson/build
+        - name: Decode export presets
+          script: echo ${GODOT_EXPORT_PRESETS} | base64 --decode -i > ./LittleJumpyPerson/export_presets.cfg
+        - name: Export project
+          script: ${GODOT_EXEC} --path ./LittleJumpyPerson --headless --export-release "${EXPORT_TYPE}" build/${ARTIFACT}
+      artifacts:
+        - LittleJumpyPerson/build/*.zip
